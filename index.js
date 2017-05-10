@@ -255,6 +255,15 @@ module.exports = function(dir, optionalId, optionalName, cfg, extEvents) {
         // get stock hooks; used if template does not contain hooks
         paths.hooks = path.join(require('cordova-app-hello-world').dirname, 'hooks');
 
+        // CB-12397 add .gitignore for plugins & platforms to app template
+        // get stock .npmignore; used if template does not contain .gitignore
+        // NOTE: This is part of a workaround for the npm .gitignore/.npmignore
+        // behavior discussed in:
+        // https://github.com/npm/npm/issues/1862
+        // https://github.com/npm/npm/issues/3763
+        // https://github.com/npm/npm/issues/7252
+        paths.npmignore = path.join(require('cordova-app-hello-world').dirname, '.npmignore');
+
         // ToDo: get stock package.json if template does not contain package.json;
         var dirAlreadyExisted = fs.existsSync(dir);
         if (!dirAlreadyExisted) {
@@ -271,13 +280,23 @@ module.exports = function(dir, optionalId, optionalName, cfg, extEvents) {
             if (!!cfg.lib.www.link)
                 linkFromTemplate(import_from_path, dir);
 
-            // If following were not copied/linked from template, copy from stock app hello world
+            // If following were not copied/linked from template,
+            // copy from stock cordova-app-hello-world:
             copyIfNotExists(paths.www, path.join(dir, 'www'));
             copyIfNotExists(paths.hooks, path.join(dir, 'hooks'));
             var configXmlExists = projectConfig(dir); //moves config to root if in www
             if (paths.configXml && !configXmlExists) {
                 shell.cp(paths.configXml, path.join(dir, 'config.xml'));
             }
+
+            // CB-12397 add .gitignore for plugins & platforms to app template
+            // get stock .npmignore; used if template does not contain .gitignore
+            // NOTE: This is part of a workaround for the npm .gitignore/.npmignore
+            // behavior discussed in:
+            // https://github.com/npm/npm/issues/1862
+            // https://github.com/npm/npm/issues/3763
+            // https://github.com/npm/npm/issues/7252
+            shell.cp(paths.npmignore, path.join(dir, '.gitignore'));
         } catch (e) {
             if (!dirAlreadyExisted) {
                 shell.rm('-rf', dir);

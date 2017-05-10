@@ -207,7 +207,7 @@ describe('create end-to-end', function() {
             // Check that we got package.json
             expect(path.join(project, 'package.json')).toExist();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).toExist();
         }).then(function() {
             delete require.cache[require.resolve(path.join(project, 'package.json'))];
@@ -229,7 +229,7 @@ describe('create end-to-end', function() {
             // Check that we got package.json
             expect(path.join(project, 'package.json')).toExist();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).toExist();
         }).fail(function(err) {
             console.log(err && err.stack);
@@ -249,7 +249,7 @@ describe('create end-to-end', function() {
             // Check that we got package.json
             expect(path.join(project, 'package.json')).toExist();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).toExist();
         }).then(function() {
             shell.rm('-rf', project);
@@ -286,7 +286,7 @@ describe('create end-to-end', function() {
             // Check that we got no package.json
             expect(path.join(project, 'package.json')).not.toExist();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).not.toExist();
         }).then(function() {
             // Check that we got the right config.xml
@@ -318,7 +318,7 @@ describe('create end-to-end', function() {
             // Check that we got no package.json
             expect(path.join(project, 'package.json')).not.toExist();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).not.toExist();
         }).fail(function(err) {
             console.log(err && err.stack);
@@ -346,7 +346,7 @@ describe('create end-to-end', function() {
             // Check that we got no package.json
             expect(path.join(project, 'package.json')).not.toExist();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).not.toExist();
         }).fail(function(err) {
             console.log(err && err.stack);
@@ -362,7 +362,7 @@ describe('create end-to-end', function() {
         .then(function() {
             checkArtifactsAndConfigXmlWithPackageFromSubDir();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).not.toExist();
         }).fail(function(err) {
             console.log(err && err.stack);
@@ -379,7 +379,7 @@ describe('create end-to-end', function() {
         .then(function() {
             checkArtifactsAndConfigXmlWithNoPackageFromWww();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).not.toExist();
         }).fail(function(err) {
             console.log(err && err.stack);
@@ -402,7 +402,7 @@ describe('create end-to-end', function() {
         .then(function() {
             checkArtifactsAndConfigXmlWithNoPackageFromWww();
             // CB-12397 check .gitignore behavior
-            expect(path.join(project, '.gitignore')).not.toExist();
+            expect(path.join(project, '.gitignore')).toExist();
             expect(path.join(project, '.npmignore')).not.toExist();
         }).fail(function(err) {
             console.log(err && err.stack);
