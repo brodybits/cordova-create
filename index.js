@@ -40,8 +40,8 @@ if (!global_config_path) {
  * This will make the create internal events visible outside
  * @param  {EventEmitter} externalEventEmitter An EventEmitter instance that will be used for
  *   logging purposes. If no EventEmitter provided, all events will be logged to console
- * @return {EventEmitter} 
- */ 
+ * @return {EventEmitter}
+ */
 function setupEvents(externalEventEmitter) {
     if (externalEventEmitter) {
         // This will make the platform internal events visible outside
@@ -49,7 +49,7 @@ function setupEvents(externalEventEmitter) {
     }
     // There is no logger if external emitter is not present,
     // so attach a console logger
-    else { 
+    else {
         CordovaLogger.subscribe(events);
     }
     return events;
@@ -59,9 +59,9 @@ function setupEvents(externalEventEmitter) {
  * Usage:
  * @dir - directory where the project will be created. Required.
  * @optionalId - app id. Required (but be "undefined")
- * @optionalName - app name. Required (but can be "undefined"). 
+ * @optionalName - app name. Required (but can be "undefined").
  * @cfg - extra config to be saved in .cordova/config.json Required (but can be "{}").
- * @extEvents - An EventEmitter instance that will be used for logging purposes. Required (but can be "undefined"). 
+ * @extEvents - An EventEmitter instance that will be used for logging purposes. Required (but can be "undefined").
  **/
 // Returns a promise.
 module.exports = function(dir, optionalId, optionalName, cfg, extEvents) {
@@ -224,7 +224,7 @@ module.exports = function(dir, optionalId, optionalName, cfg, extEvents) {
     }).then(function(input_directory) {
         var import_from_path = input_directory;
 
-        //handle when input wants to specify sub-directory (specified in index.js as "dirname" export); 
+        //handle when input wants to specify sub-directory (specified in index.js as "dirname" export);
         var isSubDir = false;
         try {
             // Delete cached require incase one exists
@@ -254,7 +254,7 @@ module.exports = function(dir, optionalId, optionalName, cfg, extEvents) {
 
         // get stock hooks; used if template does not contain hooks
         paths.hooks = path.join(require('cordova-app-hello-world').dirname, 'hooks');
-        
+
         // ToDo: get stock package.json if template does not contain package.json;
         var dirAlreadyExisted = fs.existsSync(dir);
         if (!dirAlreadyExisted) {
@@ -326,7 +326,7 @@ module.exports = function(dir, optionalId, optionalName, cfg, extEvents) {
             if (cfg.name) conf.setName(cfg.name);
             conf.setVersion('1.0.0');
             conf.write();
-        }  
+        }
     });
 };
 
@@ -365,16 +365,16 @@ function copyTemplateFiles(templateDir, projectDir, isSubDir) {
         // Remove directories, and files that are unwanted
         if (!isSubDir) {
             var excludes = ['package.json', 'RELEASENOTES.md' , '.git', 'NOTICE', 'LICENSE', 'COPYRIGHT', '.npmignore'];
-            templateFiles = templateFiles.filter( function (value) { 
-                return excludes.indexOf(value) < 0; 
-            }); 
+            templateFiles = templateFiles.filter( function (value) {
+                return excludes.indexOf(value) < 0;
+            });
         }
         // Copy each template file after filter
         for (var i = 0; i < templateFiles.length; i++) {
             copyPath = path.resolve(templateDir, templateFiles[i]);
             shell.cp('-R', copyPath, projectDir);
         }
-    }  
+    }
 }
 
 /**
@@ -406,9 +406,9 @@ function projectConfig(projectDir) {
 
 /**
  * Retrieve and read the .cordova/config file of a cordova project
- * 
+ *
  * @param  {String} project directory
- * @return {JSON data} config file's contents 
+ * @return {JSON data} config file's contents
  */
 function dotCordovaConfig(project_root) {
     var configPath = path.join(project_root, '.cordova', 'config.json');
@@ -422,7 +422,7 @@ function dotCordovaConfig(project_root) {
 
 /**
  * Write opts to .cordova/config.json
- * 
+ *
  * @param  {String} project directory
  * @param  {Object} opts containing the additions to config.json
  * @param  {Boolean} autopersist option
@@ -443,13 +443,13 @@ function writeToConfigJson(project_root, opts, autoPersist) {
         }
         return json;
     } else {
-        return json; 
-    } 
+        return json;
+    }
 }
 
 /**
  * Removes existing files and symlinks them if they exist.
- * Symlinks folders: www, merges, hooks 
+ * Symlinks folders: www, merges, hooks
  * Symlinks file: config.xml (but only if it exists outside of the www folder)
  * If config.xml exists inside of template/www, COPY (not link) it to project/
  * */
@@ -464,7 +464,7 @@ function writeToConfigJson(project_root, opts, autoPersist) {
                 fs.symlinkSync(src, dst, type);
             }
         }
-    } 
+    }
     // if template is a www dir
     if (path.basename(templateDir) === 'www') {
         linkSrc = path.resolve(templateDir);
