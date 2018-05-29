@@ -43,7 +43,7 @@ const global_config_path = process.env.CORDOVA_HOME || path.join(os.homedir(), '
 
 /**
  * Sets up to forward events to another instance, or log console.
- * This will make the create internal events visible outside
+ * Used to make the create internal events visible outside
  * @param  {EventEmitter} externalEventEmitter An EventEmitter instance that will be used for
  *   logging purposes. If no EventEmitter provided, all events will be logged to console
  * @return {EventEmitter}
@@ -57,7 +57,6 @@ function setupEvents (externalEventEmitter) {
     } else {
         CordovaLogger.subscribe(events);
     }
-    return events;
 }
 
 /**
@@ -71,10 +70,7 @@ function setupEvents (externalEventEmitter) {
 // Returns a promise.
 module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
     return Promise.resolve().then(function () {
-        // NOTE: This assignment overshadows or overwrites events declared above
-        // for no evident reason.
-        // FUTURE TODO rework to avoid this kind of overshadowing/overwrite:
-        let events = setupEvents(extEvents);
+        setupEvents(extEvents);
         events.emit('verbose', 'Using detached cordova-create');
 
         if (!dir) {
