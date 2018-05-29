@@ -35,10 +35,9 @@ var project = path.join(tmpDir, appName);
 
 // Setup and teardown test dirs
 beforeEach(function () {
-    fs.removeSync(project);
-    fs.ensureDirSync(tmpDir);
+    fs.emptyDirSync(tmpDir);
 });
-afterEach(function () {
+afterAll(function () {
     process.chdir(path.join(__dirname, '..')); // Needed to rm the dir on Windows.
     fs.removeSync(tmpDir);
 });
