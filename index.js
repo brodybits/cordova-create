@@ -27,9 +27,6 @@ var isUrl = require('is-url');
 var requireFresh = require('import-fresh');
 var validateIdentifier = require('valid-identifier');
 
-// FUTURE TODO completely drop dependency on shelljs function:
-const cp = require('shelljs').cp;
-
 var fetch = require('cordova-fetch');
 var events = require('cordova-common').events;
 var CordovaError = require('cordova-common').CordovaError;
@@ -324,11 +321,10 @@ function copyTemplateFiles (templateDir, projectDir, isSubDir) {
             });
         }
         // Copy each template file after filter
-        for (var i = 0; i < templateFiles.length; i++) {
-            copyPath = path.resolve(templateDir, templateFiles[i]);
-            // FUTURE TODO completely drop dependency on shelljs function:
-            cp('-R', copyPath, projectDir);
-        }
+        templateFiles.forEach(f => {
+            copyPath = path.resolve(templateDir, f);
+            fs.copySync(copyPath, path.resolve(projectDir, f));
+        });
     }
 }
 
