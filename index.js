@@ -17,15 +17,18 @@
     under the License.
 */
 
-var fs = require('fs');
+const fs = require('fs-extra');
+
 var os = require('os');
 var path = require('path');
 
 var Promise = require('q');
 var isUrl = require('is-url');
-var shell = require('shelljs');
 var requireFresh = require('import-fresh');
 var validateIdentifier = require('valid-identifier');
+
+// FUTURE TODO completely drop dependency on shelljs function:
+const cp = require('shelljs').cp;
 
 var fetch = require('cordova-fetch');
 var events = require('cordova-common').events;
@@ -228,15 +231,15 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
 
                 // If following were not copied/linked from template, copy from stock app hello world
                 // TODO: get stock package.json if template does not contain package.json;
-                copyIfNotExists(stockAssetPath('www'), path.join(dir, 'www'));
-                copyIfNotExists(stockAssetPath('hooks'), path.join(dir, 'hooks'));
+                copyContentsIfNotExists(stockAssetPath('www'), path.join(dir, 'www'));
+                copyContentsIfNotExists(stockAssetPath('hooks'), path.join(dir, 'hooks'));
                 var configXmlExists = projectConfig(dir); // moves config to root if in www
                 if (!configXmlExists) {
-                    shell.cp(stockAssetPath('config.xml'), path.join(dir, 'config.xml'));
+                    fs.copySync(stockAssetPath('config.xml'), path.join(dir, 'config.xml'));
                 }
             } catch (e) {
                 if (!dirAlreadyExisted) {
-                    shell.rm('-rf', dir);
+                    fs.removeSync(dir);
                 }
                 if (process.platform.slice(0, 3) === 'win' && e.code === 'EPERM') {
                     throw new CordovaError('Symlinks on Windows require Administrator privileges');
@@ -266,8 +269,8 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
             }
 
             // Create basic project structure.
-            shell.mkdir('-p', path.join(dir, 'platforms'));
-            shell.mkdir('-p', path.join(dir, 'plugins'));
+            fs.ensureDirSync(path.join(dir, 'platforms'));
+            fs.ensureDirSync(path.join(dir, 'plugins'));
 
             var configPath = path.join(dir, 'config.xml');
             // only update config.xml if not a symlink
@@ -288,10 +291,10 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
  * @param  {string} dst for copying
  * @return No return value
  */
-function copyIfNotExists (src, dst) {
+function copyContentsIfNotExists (src, dst) {
     if (!fs.existsSync(dst) && src) {
-        shell.mkdir(dst);
-        shell.cp('-R', path.join(src, '*'), dst);
+        fs.emptyDirSync(dst);
+        fs.copySync(src, dst);
     }
 }
 
@@ -310,7 +313,7 @@ function copyTemplateFiles (templateDir, projectDir, isSubDir) {
     // if template is a www dir
     if (path.basename(templateDir) === 'www') {
         copyPath = path.resolve(templateDir);
-        shell.cp('-R', copyPath, projectDir);
+        fs.copySync(copyPath, projectDir);
     } else {
         var templateFiles = fs.readdirSync(templateDir);
         // Remove directories, and files that are unwanted
@@ -323,7 +326,8 @@ function copyTemplateFiles (templateDir, projectDir, isSubDir) {
         // Copy each template file after filter
         for (var i = 0; i < templateFiles.length; i++) {
             copyPath = path.resolve(templateDir, templateFiles[i]);
-            shell.cp('-R', copyPath, projectDir);
+            // FUTURE TODO completely drop dependency on shelljs function:
+            cp('-R', copyPath, projectDir);
         }
     }
 }
@@ -374,7 +378,7 @@ function linkFromTemplate (templateDir, projectDir) {
     function rmlinkSync (src, dst, type) {
         if (src && dst) {
             if (fs.existsSync(dst)) {
-                shell.rm('-rf', dst);
+                fs.removeSync(dst);
             }
             if (fs.existsSync(src)) {
                 fs.symlinkSync(src, dst, type);
@@ -403,7 +407,7 @@ function linkFromTemplate (templateDir, projectDir) {
     // if template/www/config.xml then copy to project/config.xml
     copyDst = path.join(projectDir, 'config.xml');
     if (!fs.existsSync(copyDst) && fs.existsSync(copySrc)) {
-        shell.cp(copySrc, projectDir);
+        fs.copySync(copySrc, projectDir);
     }
 }
 
