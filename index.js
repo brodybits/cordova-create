@@ -19,27 +19,27 @@
 
 const fs = require('fs-extra');
 
-var os = require('os');
-var path = require('path');
+const os = require('os');
+const path = require('path');
 
-var Promise = require('q');
-var isUrl = require('is-url');
-var requireFresh = require('import-fresh');
-var validateIdentifier = require('valid-identifier');
+const Promise = require('q');
+const isUrl = require('is-url');
+const requireFresh = require('import-fresh');
+const validateIdentifier = require('valid-identifier');
 
 // FUTURE TODO completely drop dependency on shelljs function:
 const cp = require('shelljs').cp;
 
-var fetch = require('cordova-fetch');
-var events = require('cordova-common').events;
-var CordovaError = require('cordova-common').CordovaError;
-var ConfigParser = require('cordova-common').ConfigParser;
-var CordovaLogger = require('cordova-common').CordovaLogger.get();
+const fetch = require('cordova-fetch');
+const events = require('cordova-common').events;
+const CordovaError = require('cordova-common').CordovaError;
+const ConfigParser = require('cordova-common').ConfigParser;
+const CordovaLogger = require('cordova-common').CordovaLogger.get();
 
 const DEFAULT_VERSION = '1.0.0';
 
 // Global configuration paths
-var global_config_path = process.env.CORDOVA_HOME || path.join(os.homedir(), '.cordova');
+const global_config_path = process.env.CORDOVA_HOME || path.join(os.homedir(), '.cordova');
 
 /**
  * Sets up to forward events to another instance, or log console.
@@ -71,7 +71,10 @@ function setupEvents (externalEventEmitter) {
 // Returns a promise.
 module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
     return Promise.resolve().then(function () {
-        events = setupEvents(extEvents);
+        // NOTE: This assignment overshadows or overwrites events declared above
+        // for no evident reason.
+        // FUTURE TODO rework to avoid this kind of overshadowing/overwrite:
+        let events = setupEvents(extEvents);
         events.emit('verbose', 'Using detached cordova-create');
 
         if (!dir) {
@@ -79,17 +82,17 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
         }
 
         // read projects .cordova/config.json file for project settings
-        var configFile = dotCordovaConfig(dir);
+        const configFile = dotCordovaConfig(dir);
 
         // if data exists in the configFile, lets combine it with cfg
         // cfg values take priority over config file
         if (configFile) {
-            var finalConfig = {};
-            for (var key1 in configFile) {
+            const finalConfig = {};
+            for (let key1 in configFile) {
                 finalConfig[key1] = configFile[key1];
             }
 
-            for (var key2 in cfg) {
+            for (let key2 in cfg) {
                 finalConfig[key2] = cfg[key2];
             }
 
@@ -109,8 +112,8 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
         dir = path.resolve(dir);
 
         // dir must be either empty except for .cordova config file or not exist at all..
-        var sanedircontents = function (d) {
-            var contents = fs.readdirSync(d);
+        const sanedircontents = function (d) {
+            const contents = fs.readdirSync(d);
             if (contents.length === 0) {
                 return true;
             } else if (contents.length === 1) {
@@ -144,8 +147,8 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
         // we make sure that the shortest relative path from source-to-target
         // must start by going up at least one directory or with a drive
         // letter for Windows.
-        var rel_path = path.relative(cfg.lib.www.url, dir);
-        var goes_up = rel_path.split(path.sep)[0] === '..';
+        const rel_path = path.relative(cfg.lib.www.url, dir);
+        const goes_up = rel_path.split(path.sep)[0] === '..';
 
         if (!(goes_up || rel_path[1] === ':')) {
             throw new CordovaError(
@@ -164,13 +167,18 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
                 return cfg.lib.www.url;
             }
 
-            var isGit = cfg.lib.www.template && isUrl(cfg.lib.www.url);
-            var isNPM = cfg.lib.www.template && (cfg.lib.www.url.indexOf('@') > -1 || !fs.existsSync(path.resolve(cfg.lib.www.url))) && !isGit;
+            const isGit = cfg.lib.www.template && isUrl(cfg.lib.www.url);
+            const isNPM = cfg.lib.www.template && (cfg.lib.www.url.indexOf('@') > -1 || !fs.existsSync(path.resolve(cfg.lib.www.url))) && !isGit;
             // Always use cordova fetch to obtain the npm or git template
             if (isGit || isNPM) {
                 // Saved to .Cordova folder (ToDo: Delete installed template after using)
-                var tempDest = global_config_path;
-                var target = cfg.lib.www.url;
+                const tempDest = global_config_path;
+
+                // FUTURE TBD rework code below to use ternary (?:) operator to
+                // declare this as const:
+                // handle as const:
+                let target = cfg.lib.www.url;
+
                 // add latest to npm module if no version is specified
                 // this prevents create using an older cached version of the template
                 if (isNPM && target.indexOf('@') === -1) {
@@ -191,12 +199,12 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
             }
         })
         .then(function (input_directory) {
-            var import_from_path = input_directory;
+            let import_from_path = input_directory;
 
             // handle when input wants to specify sub-directory (specified in index.js as "dirname" export);
-            var isSubDir = false;
+            let isSubDir = false;
             try {
-                var templatePkg = requireFresh(input_directory);
+                const templatePkg = requireFresh(input_directory);
                 if (templatePkg && templatePkg.dirname) {
                     import_from_path = templatePkg.dirname;
                     isSubDir = true;
@@ -211,7 +219,7 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
                     import_from_path);
             }
 
-            var dirAlreadyExisted = fs.existsSync(dir);
+            const dirAlreadyExisted = fs.existsSync(dir);
             if (!dirAlreadyExisted) {
                 fs.mkdirSync(dir);
             }
@@ -233,7 +241,7 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
                 // TODO: get stock package.json if template does not contain package.json;
                 copyContentsIfNotExists(stockAssetPath('www'), path.join(dir, 'www'));
                 copyContentsIfNotExists(stockAssetPath('hooks'), path.join(dir, 'hooks'));
-                var configXmlExists = projectConfig(dir); // moves config to root if in www
+                const configXmlExists = projectConfig(dir); // moves config to root if in www
                 if (!configXmlExists) {
                     fs.copySync(stockAssetPath('config.xml'), path.join(dir, 'config.xml'));
                 }
@@ -247,10 +255,10 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
                 throw e;
             }
 
-            var pkgjsonPath = path.join(dir, 'package.json');
+            const pkgjsonPath = path.join(dir, 'package.json');
             // Update package.json name and version fields
             if (fs.existsSync(pkgjsonPath)) {
-                var pkgjson = requireFresh(pkgjsonPath);
+                const pkgjson = requireFresh(pkgjsonPath);
 
                 // Pkjson.displayName should equal config's name.
                 if (cfg.name) {
@@ -272,11 +280,11 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
             fs.ensureDirSync(path.join(dir, 'platforms'));
             fs.ensureDirSync(path.join(dir, 'plugins'));
 
-            var configPath = path.join(dir, 'config.xml');
+            const configPath = path.join(dir, 'config.xml');
             // only update config.xml if not a symlink
             if (!fs.lstatSync(configPath).isSymbolicLink()) {
                 // Write out id, name and default version to config.xml
-                var conf = new ConfigParser(configPath);
+                const conf = new ConfigParser(configPath);
                 if (cfg.id) conf.setPackageName(cfg.id);
                 if (cfg.name) conf.setName(cfg.name);
                 conf.setVersion(DEFAULT_VERSION);
@@ -309,23 +317,22 @@ function copyContentsIfNotExists (src, dst) {
  * isSubDir - boolean is true if template has subdirectory structure (see code around line 229)
  */
 function copyTemplateFiles (templateDir, projectDir, isSubDir) {
-    var copyPath;
     // if template is a www dir
     if (path.basename(templateDir) === 'www') {
-        copyPath = path.resolve(templateDir);
+        const copyPath = path.resolve(templateDir);
         fs.copySync(copyPath, projectDir);
     } else {
-        var templateFiles = fs.readdirSync(templateDir);
+        let templateFiles = fs.readdirSync(templateDir);
         // Remove directories, and files that are unwanted
         if (!isSubDir) {
-            var excludes = ['package.json', 'RELEASENOTES.md', '.git', 'NOTICE', 'LICENSE', 'COPYRIGHT', '.npmignore'];
+            const excludes = ['package.json', 'RELEASENOTES.md', '.git', 'NOTICE', 'LICENSE', 'COPYRIGHT', '.npmignore'];
             templateFiles = templateFiles.filter(function (value) {
                 return excludes.indexOf(value) < 0;
             });
         }
         // Copy each template file after filter
-        for (var i = 0; i < templateFiles.length; i++) {
-            copyPath = path.resolve(templateDir, templateFiles[i]);
+        for (let i = 0; i < templateFiles.length; i++) {
+            const copyPath = path.resolve(templateDir, templateFiles[i]);
             // FUTURE TODO completely drop dependency on shelljs function:
             cp('-R', copyPath, projectDir);
         }
@@ -339,8 +346,8 @@ function copyTemplateFiles (templateDir, projectDir, isSubDir) {
  * @return {String or False} location of config file; if none exists, returns false
  */
 function projectConfig (projectDir) {
-    var rootPath = path.join(projectDir, 'config.xml');
-    var wwwPath = path.join(projectDir, 'www', 'config.xml');
+    const rootPath = path.join(projectDir, 'config.xml');
+    const wwwPath = path.join(projectDir, 'www', 'config.xml');
     if (fs.existsSync(rootPath)) {
         return rootPath;
     } else if (fs.existsSync(wwwPath)) {
@@ -357,13 +364,17 @@ function projectConfig (projectDir) {
  * @return {JSON data} config file's contents
  */
 function dotCordovaConfig (project_root) {
-    var configPath = path.join(project_root, '.cordova', 'config.json');
-    var data;
+    const configPath = path.join(project_root, '.cordova', 'config.json');
+
+    // FUTURE TBD rework code below to use ternary (?:) operator to
+    // handle as const:
+    let data;
     if (!fs.existsSync(configPath)) {
         data = '{}';
     } else {
         data = fs.readFileSync(configPath, 'utf-8');
     }
+
     return JSON.parse(data);
 }
 
@@ -374,7 +385,6 @@ function dotCordovaConfig (project_root) {
  * If config.xml exists inside of template/www, COPY (not link) it to project/
  * */
 function linkFromTemplate (templateDir, projectDir) {
-    var linkSrc, linkDst, linkFolders, copySrc, copyDst;
     function rmlinkSync (src, dst, type) {
         if (src && dst) {
             if (fs.existsSync(dst)) {
@@ -385,6 +395,10 @@ function linkFromTemplate (templateDir, projectDir) {
             }
         }
     }
+
+    // FUTURE TBD rework code below to handle as const:
+    let linkSrc, linkDst, linkFolders, copySrc;
+
     // if template is a www dir
     if (path.basename(templateDir) === 'www') {
         linkSrc = path.resolve(templateDir);
@@ -394,7 +408,7 @@ function linkFromTemplate (templateDir, projectDir) {
     } else {
         linkFolders = ['www', 'merges', 'hooks'];
         // Link each folder
-        for (var i = 0; i < linkFolders.length; i++) {
+        for (let i = 0; i < linkFolders.length; i++) {
             linkSrc = path.join(templateDir, linkFolders[i]);
             linkDst = path.join(projectDir, linkFolders[i]);
             rmlinkSync(linkSrc, linkDst, 'dir');
@@ -404,8 +418,9 @@ function linkFromTemplate (templateDir, projectDir) {
         rmlinkSync(linkSrc, linkDst, 'file');
         copySrc = path.join(templateDir, 'www', 'config.xml');
     }
+
     // if template/www/config.xml then copy to project/config.xml
-    copyDst = path.join(projectDir, 'config.xml');
+    const copyDst = path.join(projectDir, 'config.xml');
     if (!fs.existsSync(copyDst) && fs.existsSync(copySrc)) {
         fs.copySync(copySrc, projectDir);
     }
