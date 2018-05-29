@@ -228,8 +228,8 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
 
                 // If following were not copied/linked from template, copy from stock app hello world
                 // TODO: get stock package.json if template does not contain package.json;
-                copyContentsIfNotExists(stockAssetPath('www'), path.join(dir, 'www'));
-                copyContentsIfNotExists(stockAssetPath('hooks'), path.join(dir, 'hooks'));
+                copyIfNotExists(stockAssetPath('www'), path.join(dir, 'www'));
+                copyIfNotExists(stockAssetPath('hooks'), path.join(dir, 'hooks'));
                 var configXmlExists = projectConfig(dir); // moves config to root if in www
                 if (!configXmlExists) {
                     fs.copySync(stockAssetPath('config.xml'), path.join(dir, 'config.xml'));
@@ -288,9 +288,8 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
  * @param  {string} dst for copying
  * @return No return value
  */
-function copyContentsIfNotExists (src, dst) {
+function copyIfNotExists (src, dst) {
     if (!fs.existsSync(dst) && src) {
-        fs.emptyDirSync(dst);
         fs.copySync(src, dst);
     }
 }
@@ -373,9 +372,7 @@ function linkFromTemplate (templateDir, projectDir) {
     var linkSrc, linkDst, linkFolders, copySrc, copyDst;
     function rmlinkSync (src, dst, type) {
         if (src && dst) {
-            if (fs.existsSync(dst)) {
-                fs.removeSync(dst);
-            }
+            fs.removeSync(dst);
             if (fs.existsSync(src)) {
                 fs.symlinkSync(src, dst, type);
             }
