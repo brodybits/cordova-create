@@ -170,17 +170,13 @@ module.exports = function (dir, optionalId, optionalName, cfg, extEvents) {
                 // Saved to .Cordova folder (ToDo: Delete installed template after using)
                 const tempDest = global_config_path;
 
-                // FUTURE TBD rework code below to use ternary (?:) operator to
-                // declare this as const:
-                // handle as const:
-                let target = cfg.lib.www.url;
-
                 // add latest to npm module if no version is specified
                 // this prevents create using an older cached version of the template
-                if (isNPM && target.indexOf('@') === -1) {
-                    target = cfg.lib.www.url + '@latest';
-                }
+                const target = (isNPM && cfg.lib.www.url.indexOf('@') === -1) ?
+                    cfg.lib.www.url + '@latest' : cfg.lib.www.url;
+
                 events.emit('verbose', 'Using cordova-fetch for ' + target);
+
                 return fetch(target, tempDest, {})
                     .catch(function (err) {
                         events.emit('error', '\x1B[1m \x1B[31m Error from Cordova Fetch: ' + err.message);
@@ -362,14 +358,8 @@ function projectConfig (projectDir) {
 function dotCordovaConfig (project_root) {
     const configPath = path.join(project_root, '.cordova', 'config.json');
 
-    // FUTURE TBD rework code below to use ternary (?:) operator to
-    // handle as const:
-    let data;
-    if (!fs.existsSync(configPath)) {
-        data = '{}';
-    } else {
-        data = fs.readFileSync(configPath, 'utf-8');
-    }
+    const data = fs.existsSync(configPath) ?
+        fs.readFileSync(configPath, 'utf-8') : '{}';
 
     return JSON.parse(data);
 }
