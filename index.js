@@ -309,7 +309,7 @@ function copyTemplateFiles (templateDir, projectDir, isSubDir) {
     // if template is a www dir
     if (path.basename(templateDir) === 'www') {
         copyPath = path.resolve(templateDir);
-        fs.copySync(copyPath, projectDir);
+        fs.copySync(copyPath, path.resolve(projectDir, 'www'));
     } else {
         var templateFiles = fs.readdirSync(templateDir);
         // Remove directories, and files that are unwanted
@@ -400,7 +400,7 @@ function linkFromTemplate (templateDir, projectDir) {
     // if template/www/config.xml then copy to project/config.xml
     copyDst = path.join(projectDir, 'config.xml');
     if (!fs.existsSync(copyDst) && fs.existsSync(copySrc)) {
-        fs.copySync(copySrc, projectDir);
+        fs.copySync(copySrc, copyDst);
     }
 }
 
