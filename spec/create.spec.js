@@ -306,7 +306,11 @@ describe('create end-to-end', function () {
             }
         };
         return create(project, appId, appName, config, events)
-            .then(checkProjectArtifactsWithConfigFromTemplate);
+            .then(checkProjectArtifactsWithConfigFromTemplate)
+            .then(_ => {
+                // Assert that we have the fixture www, not one from stock the app
+                expect(path.join(project, 'www', 'fixture-marker')).toExist();
+            });
     });
 
     it('should successfully run with existing, empty destination', function () {
