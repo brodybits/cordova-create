@@ -103,6 +103,10 @@ describe('create end-to-end', function () {
     function checkProjectArtifactsWithConfigFromTemplate () {
         checkProjectCommonArtifacts();
 
+        // Check that standard js artifact does not exist
+        expect(path.join(project, 'www', 'js')).not.toExist();
+        expect(path.join(project, 'www', 'js', 'index.js')).not.toExist();
+
         // [CB-12397] Check that .gitignore does not exist
         expect(path.join(project, '.gitignore')).not.toExist();
         // [CB-12397] Check that .npmignore does not exist
@@ -119,6 +123,10 @@ describe('create end-to-end', function () {
     function checkProjectArtifactsWithNoPackageFromTemplate () {
         checkProjectCommonArtifacts();
 
+        // Check that standard js artifact does not exist
+        expect(path.join(project, 'www', 'js')).not.toExist();
+        expect(path.join(project, 'www', 'js', 'index.js')).not.toExist();
+
         // [CB-12397] Check that .gitignore does not exist
         expect(path.join(project, '.gitignore')).not.toExist();
         // [CB-12397] Check that .npmignore does not exist
@@ -130,6 +138,10 @@ describe('create end-to-end', function () {
 
     function checkProjectArtifactsWithPackageFromTemplate () {
         checkProjectCommonArtifacts();
+
+        // Check that standard js artifact exists
+        expect(path.join(project, 'www', 'js')).toExist();
+        expect(path.join(project, 'www', 'js', 'index.js')).toExist();
 
         // Check if package.json exists.
         expect(path.join(project, 'package.json')).toExist();
@@ -147,6 +159,10 @@ describe('create end-to-end', function () {
 
     function checkProjectArtifactsWithPackageFromSubDir () {
         checkProjectCommonArtifacts();
+
+        // Check that standard js artifact does not exist
+        expect(path.join(project, 'www', 'js')).not.toExist();
+        expect(path.join(project, 'www', 'js', 'index.js')).not.toExist();
 
         // [CB-12397] Check that .gitignore does not exist
         expect(path.join(project, '.gitignore')).not.toExist();
