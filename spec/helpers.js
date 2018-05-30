@@ -84,7 +84,7 @@ beforeEach(function () {
                     var result = {};
                     result.pass = fs.existsSync(testPath);
 
-                    if (result.pass) {
+                    if (!result.pass) {
                         result.message = 'Expected file ' + testPath + ' to exist.';
                     } else {
                         result.message = 'Expected file ' + testPath + ' to not exist.';
