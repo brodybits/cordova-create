@@ -336,6 +336,8 @@ describe('create end-to-end', function () {
                 // Additional check that we have the fixture www,
                 // not one from stock the app
                 expect(path.join(project, 'www', 'fixture-marker-page.html')).toExist();
+                expect(path.join(project, 'www', 'subdir')).toExist();
+                expect(path.join(project, 'www', 'subdir', 'sub-fixture-marker-page.html')).toExist();
             });
     });
 
