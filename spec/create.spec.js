@@ -63,19 +63,20 @@ describe('create end-to-end', function () {
         dirs.forEach(function (d) {
             expect(path.join(project, d)).toExist();
         });
+
+        // Check that README.md exists inside of hooks
         expect(path.join(project, 'hooks', 'README.md')).toExist();
 
-        // Check if www files exist.
+        // Check that index.html exists inside of www
         expect(path.join(project, 'www', 'index.html')).toExist();
 
         // Check if config.xml exists.
         expect(path.join(project, 'config.xml')).toExist();
 
-        // Check that .npmignore does not exist
-        expect(path.join(project, 'www', '.npmignore')).not.toExist();
-
-        // index.js and template subdir folder should not exist in top level
+        // index.html, index.js and template subdir folder
+        // should not exist in top level
         // (inner files should be copied to the project top level folder)
+        expect(path.join(project, 'index.html')).not.toExist();
         expect(path.join(project, 'index.js')).not.toExist();
         expect(path.join(project, 'template')).not.toExist();
 
@@ -104,6 +105,8 @@ describe('create end-to-end', function () {
 
         // [CB-12397] Check that .gitignore does not exist
         expect(path.join(project, '.gitignore')).not.toExist();
+        // [CB-12397] Check that .npmignore does not exist
+        expect(path.join(project, '.npmignore')).not.toExist();
 
         // Check that we got no package.json
         expect(path.join(project, 'package.json')).not.toExist();
@@ -118,6 +121,8 @@ describe('create end-to-end', function () {
 
         // [CB-12397] Check that .gitignore does not exist
         expect(path.join(project, '.gitignore')).not.toExist();
+        // [CB-12397] Check that .npmignore does not exist
+        expect(path.join(project, '.npmignore')).not.toExist();
 
         // Check that we got no package.json
         expect(path.join(project, 'package.json')).not.toExist();
@@ -131,6 +136,8 @@ describe('create end-to-end', function () {
 
         // [CB-12397] Check that .gitignore does not exist
         expect(path.join(project, '.gitignore')).not.toExist();
+        // [CB-12397] Check that .npmignore exists
+        expect(path.join(project, '.npmignore')).toExist();
 
         // Check that we got package.json (the correct one)
         var pkjson = requireFresh(path.join(project, 'package.json'));
@@ -143,6 +150,8 @@ describe('create end-to-end', function () {
 
         // [CB-12397] Check that .gitignore does not exist
         expect(path.join(project, '.gitignore')).not.toExist();
+        // [CB-12397] Check that .npmignore does not exist
+        expect(path.join(project, '.npmignore')).not.toExist();
 
         // Check if config files exist.
         expect(path.join(project, 'www', 'index.html')).toExist();
