@@ -171,25 +171,6 @@ describe('create end-to-end', function () {
             .then(checkProjectCreatedWithDefaultTemplate);
     });
 
-    it('should successfully run with NPM package and explicitly fetch latest if no version is given', function () {
-        // Create a real project with npm module as template
-        // TODO fetch should be responsible for the cache busting part of this test
-        var config = {
-            lib: {
-                www: {
-                    template: true,
-                    url: 'phonegap-template-vue-f7-tabs'
-                }
-            }
-        };
-        return createWithMockFetch(project, appId, appName, config, events)
-            .then(fetchSpy => {
-                expect(fetchSpy).toHaveBeenCalledTimes(1);
-                expect(fetchSpy.calls.argsFor(0)[0]).toBe(config.lib.www.url + '@latest');
-            })
-            .then(checkProjectCreatedWithDefaultTemplate);
-    });
-
     it('should successfully run with template not having a package.json at toplevel', function () {
         var config = {
             lib: {
