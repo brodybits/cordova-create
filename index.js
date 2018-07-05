@@ -30,7 +30,8 @@ var requireFresh = require('import-fresh');
 var validateIdentifier = require('valid-identifier');
 
 var fetch = require('cordova-fetch');
-var events = require('cordova-common').events;
+
+const events = require('cordova-common').events;
 var CordovaError = require('cordova-common').CordovaError;
 var ConfigParser = require('cordova-common').ConfigParser;
 var CordovaLogger = require('cordova-common').CordovaLogger.get();
@@ -53,7 +54,6 @@ function setupEvents (externalEventEmitter) {
     } else {
         CordovaLogger.subscribe(events);
     }
-    return events;
 }
 
 /**
@@ -102,7 +102,7 @@ function cordovaCreate (dest, options = {}) {
             throw new CordovaError('Given options must be an object');
         }
 
-        events = setupEvents(opts.extEvents);
+        setupEvents(opts.extEvents);
         events.emit('verbose', 'Using detached cordova-create');
 
         // Resolve absolute directory path.
