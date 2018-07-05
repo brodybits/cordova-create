@@ -345,11 +345,11 @@ function linkFromTemplate (templateDir, projectDir) {
     } else {
         linkFolders = ['www', 'merges', 'hooks'];
         // Link each folder
-        for (var i = 0; i < linkFolders.length; i++) {
-            linkSrc = path.join(templateDir, linkFolders[i]);
-            linkDst = path.join(projectDir, linkFolders[i]);
+        linkFolders.forEach(function (folder) {
+            linkSrc = path.join(templateDir, folder);
+            linkDst = path.join(projectDir, folder);
             rmlinkSync(linkSrc, linkDst, 'dir');
-        }
+        });
         linkSrc = path.join(templateDir, 'config.xml');
         linkDst = path.join(projectDir, 'config.xml');
         rmlinkSync(linkSrc, linkDst, 'file');
