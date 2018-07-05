@@ -73,28 +73,28 @@ function cordovaCreateLegacyAdapter (dir, id, name, cfg, extEvents) {
     // TODO DEPRECATION NOTICE
 
     // unwrap that nasty nested config object
-    cfg = ((cfg || {}).lib || {}).www || {};
+    const opts = ((cfg || {}).lib || {}).www || {};
 
-    if (id) cfg.id = id;
-    if (name) cfg.name = name;
-    if (extEvents) cfg.extEvents = extEvents;
+    if (id) opts.id = id;
+    if (name) opts.name = name;
+    if (extEvents) opts.extEvents = extEvents;
 
-    return Q(cordovaCreate(dir, cfg));
+    return Q(cordovaCreate(dir, opts));
 }
 
 /**
  * Creates a new cordova project in the given directory.
  *
  * @param {string} dest         directory where the project will be created.
- * @param {Object} [opts={}]    options to be used for creating the project.
+ * @param {Object} [options={}] options to be used for creating the project.
  * @returns {Promise}           Resolves when project creation has finished.
  */
-function cordovaCreate (dest, opts = {}) {
-    // TODO this is to avoid having a huge diff. Remove later.
-    let dir = dest;
+function cordovaCreate (dest, options = {}) {
+    // Shallow copy opts
+    const opts = Object.assign({}, options);
 
     return Promise.resolve().then(function () {
-        if (!dir) {
+        if (!dest) {
             throw new CordovaError('Directory not specified. See `cordova help`.');
         }
 
@@ -102,14 +102,11 @@ function cordovaCreate (dest, opts = {}) {
             throw new CordovaError('Given options must be an object');
         }
 
-        // Shallow copy opts
-        opts = Object.assign({}, opts);
-
         events = setupEvents(opts.extEvents);
         events.emit('verbose', 'Using detached cordova-create');
 
-        // Make absolute.
-        dir = path.resolve(dir);
+        // Resolve absolute directory path.
+        const dir = path.resolve(dest);
 
         if (fs.existsSync(dir) && fs.readdirSync(dir).length > 0) {
             throw new CordovaError('Path already exists and is not empty: ' + dir);
@@ -133,7 +130,19 @@ function cordovaCreate (dest, opts = {}) {
                 `Cannot create project "${dir}" inside the template used to create it "${opts.url}".`
             );
         }
-    })
+        return createInAbsoluteDirectory(dir, opts);
+    });
+}
+
+/**
+ * Creates a new cordova project in an absolute directory.
+ *
+ * @param {string} dir          absolute directory where the project will be created.
+ * @param {Object} opts         options to be used for creating the project.
+ * @returns {Promise}           Resolves when project creation has finished.
+ */
+function createInAbsoluteDirectory (dir, opts) {
+    return Promise.resolve()
         .then(function () {
             // Finally, Ready to start!
             events.emit('log', 'Creating a new cordova project.');
