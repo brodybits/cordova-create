@@ -19,14 +19,14 @@
 
 const fs = require('fs-extra');
 
-var path = require('path');
+const path = require('path');
 
-var requireFresh = require('import-fresh');
+const requireFresh = require('import-fresh');
 
-var create = require('..');
-var events = require('cordova-common').events;
-var CordovaError = require('cordova-common').CordovaError;
-var ConfigParser = require('cordova-common').ConfigParser;
+const create = require('..');
+const events = require('cordova-common').events;
+const CordovaError = require('cordova-common').CordovaError;
+const ConfigParser = require('cordova-common').ConfigParser;
 const {tmpDir, createWith, createWithMockFetch, expectRejection} = require('./helpers');
 
 const appName = 'TestBase';
@@ -59,7 +59,7 @@ describe('create end-to-end', function () {
 
     function checkCommonArtifacts () {
         // Check that top level dirs exist
-        var dirs = ['hooks', 'platforms', 'plugins', 'www'];
+        const dirs = ['hooks', 'platforms', 'plugins', 'www'];
         dirs.forEach(function (d) {
             expect(path.join(project, d)).toExist();
         });
@@ -82,7 +82,7 @@ describe('create end-to-end', function () {
         expect(path.join(project, 'www', 'config.xml')).not.toExist();
 
         // Check that config.xml was updated correctly
-        var configXml = new ConfigParser(path.join(project, 'config.xml'));
+        const configXml = new ConfigParser(path.join(project, 'config.xml'));
         expect(configXml.packageName()).toEqual(appId);
         expect(configXml.name()).toEqual(appName);
         expect(configXml.version()).toEqual(appVersion);
@@ -137,7 +137,7 @@ describe('create end-to-end', function () {
 
     it('should successfully run with Git URL', function () {
         // Create a real project with git URL as template
-        var config = {
+        const config = {
             lib: {
                 www: {
                     url: 'https://github.com/apache/cordova-app-hello-world',
@@ -155,7 +155,7 @@ describe('create end-to-end', function () {
 
     it('should successfully run with NPM package (specific version)', function () {
         // Create a real project with npm module as template
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -173,7 +173,7 @@ describe('create end-to-end', function () {
 
     it('should successfully run with NPM package (no specific version)', function () {
         // Create a real project with npm module as template
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -190,7 +190,7 @@ describe('create end-to-end', function () {
     });
 
     it('should successfully run with template not having a package.json at toplevel', function () {
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -203,7 +203,7 @@ describe('create end-to-end', function () {
     });
 
     it('should successfully run with template having package.json and no sub directory', function () {
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -216,7 +216,7 @@ describe('create end-to-end', function () {
     });
 
     it('should successfully run with template having package.json, and subdirectory, and no package.json in subdirectory', function () {
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -229,7 +229,7 @@ describe('create end-to-end', function () {
     });
 
     it('should successfully run with template having package.json, and subdirectory, and package.json in subdirectory', function () {
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -244,7 +244,7 @@ describe('create end-to-end', function () {
     });
 
     it('should successfully run config.xml in the www folder and move it outside', function () {
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -257,7 +257,7 @@ describe('create end-to-end', function () {
     });
 
     it('should successfully run with www folder as the template', function () {
-        var config = {
+        const config = {
             lib: {
                 www: {
                     template: true,
@@ -289,7 +289,7 @@ describe('create end-to-end', function () {
         it('when passed www folder should not move www/config.xml, only copy and update', function () {
             function checkSymWWW () {
                 // Check if top level dirs exist.
-                var dirs = ['hooks', 'platforms', 'plugins', 'www'];
+                const dirs = ['hooks', 'platforms', 'plugins', 'www'];
                 dirs.forEach(function (d) {
                     expect(path.join(project, d)).toExist();
                 });
@@ -301,18 +301,19 @@ describe('create end-to-end', function () {
                 // Check www/config exists
                 expect(path.join(project, 'www', 'config.xml')).toExist();
                 // Check www/config.xml was not updated.
-                var configXml = new ConfigParser(path.join(project, 'www', 'config.xml'));
+                const configXml = new ConfigParser(path.join(project, 'www', 'config.xml'));
                 expect(configXml.packageName()).toEqual('io.cordova.hellocordova');
                 expect(configXml.version()).toEqual('0.0.1');
                 expect(configXml.description()).toEqual('this is the correct config.xml');
 
                 // Check that config.xml was copied to project/config.xml
                 expect(path.join(project, 'config.xml')).toExist();
-                configXml = new ConfigParser(path.join(project, 'config.xml'));
-                expect(configXml.description()).toEqual('this is the correct config.xml');
+
+                const configXml2 = new ConfigParser(path.join(project, 'config.xml'));
+                expect(configXml2.description()).toEqual('this is the correct config.xml');
                 // Check project/config.xml was updated.
-                expect(configXml.packageName()).toEqual(appId);
-                expect(configXml.version()).toEqual('1.0.0');
+                expect(configXml2.packageName()).toEqual(appId);
+                expect(configXml2.version()).toEqual('1.0.0');
 
                 // Check that we got no package.json
                 expect(path.join(project, 'package.json')).not.toExist();
@@ -323,7 +324,7 @@ describe('create end-to-end', function () {
                 expect(fs.lstatSync(path.join(project, 'hooks')).isSymbolicLink()).not.toBe(true);
                 expect(fs.lstatSync(path.join(project, 'config.xml')).isSymbolicLink()).not.toBe(true);
             }
-            var config = {
+            const config = {
                 lib: {
                     www: {
                         template: true,
@@ -340,7 +341,7 @@ describe('create end-to-end', function () {
         it('with subdirectory should not update symlinked project/config.xml', function () {
             function checkSymSubDir () {
                 // Check if top level dirs exist.
-                var dirs = ['hooks', 'platforms', 'plugins', 'www'];
+                const dirs = ['hooks', 'platforms', 'plugins', 'www'];
                 dirs.forEach(function (d) {
                     expect(path.join(project, d)).toExist();
                 });
@@ -358,7 +359,7 @@ describe('create end-to-end', function () {
                 expect(fs.lstatSync(path.join(project, 'config.xml')).isSymbolicLink()).toBe(true);
 
                 // Check that config.xml was not updated. (symlinked config does not get updated!)
-                var configXml = new ConfigParser(path.join(project, 'config.xml'));
+                const configXml = new ConfigParser(path.join(project, 'config.xml'));
                 expect(configXml.packageName()).toEqual('io.cordova.hellocordova');
                 expect(configXml.version()).toEqual('0.0.1');
 
@@ -366,12 +367,12 @@ describe('create end-to-end', function () {
                 expect(configXml.description()).toEqual('this is the correct config.xml');
 
                 // Check that we got package.json (the correct one) and it was changed
-                var pkjson = requireFresh(path.join(project, 'package.json'));
+                const pkjson = requireFresh(path.join(project, 'package.json'));
                 // Pkjson.name should equal config's id.
                 expect(pkjson.name).toEqual(appId.toLowerCase());
                 expect(pkjson.valid).toEqual('true');
             }
-            var config = {
+            const config = {
                 lib: {
                     www: {
                         template: true,
@@ -388,7 +389,7 @@ describe('create end-to-end', function () {
         it('with no config should create one and update it', function () {
             function checkSymNoConfig () {
                 // Check if top level dirs exist.
-                var dirs = ['hooks', 'platforms', 'plugins', 'www'];
+                const dirs = ['hooks', 'platforms', 'plugins', 'www'];
                 dirs.forEach(function (d) {
                     expect(path.join(project, d)).toExist();
                 });
@@ -399,7 +400,7 @@ describe('create end-to-end', function () {
                 expect(path.join(project, 'www', 'index.html')).toExist();
 
                 // Check that config.xml was updated.
-                var configXml = new ConfigParser(path.join(project, 'config.xml'));
+                const configXml = new ConfigParser(path.join(project, 'config.xml'));
                 expect(configXml.packageName()).toEqual(appId);
 
                 // Check that www, hooks, merges are really a symlink; config is not
@@ -409,7 +410,7 @@ describe('create end-to-end', function () {
                 expect(fs.lstatSync(path.join(project, 'config.xml')).isSymbolicLink()).not.toBe(true);
             }
 
-            var config = {
+            const config = {
                 lib: {
                     www: {
                         template: true,

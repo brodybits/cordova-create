@@ -80,7 +80,7 @@ beforeEach(function () {
             return {
                 compare: function (testPath) {
 
-                    var result = {};
+                    const result = {};
                     result.pass = fs.existsSync(testPath);
 
                     if (result.pass) {
