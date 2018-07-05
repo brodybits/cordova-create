@@ -153,13 +153,31 @@ describe('create end-to-end', function () {
             .then(checkProjectCreatedWithDefaultTemplate);
     });
 
-    it('should successfully run with NPM package', function () {
+    it('should successfully run with NPM package (specific version)', function () {
         // Create a real project with npm module as template
         var config = {
             lib: {
                 www: {
                     template: true,
                     url: 'phonegap-template-vue-f7-tabs@1'
+                }
+            }
+        };
+        return createWithMockFetch(project, appId, appName, config, events)
+            .then(fetchSpy => {
+                expect(fetchSpy).toHaveBeenCalledTimes(1);
+                expect(fetchSpy.calls.argsFor(0)[0]).toBe(config.lib.www.url);
+            })
+            .then(checkProjectCreatedWithDefaultTemplate);
+    });
+
+    it('should successfully run with NPM package (no specific version)', function () {
+        // Create a real project with npm module as template
+        var config = {
+            lib: {
+                www: {
+                    template: true,
+                    url: 'phonegap-template-vue-f7-tabs'
                 }
             }
         };
