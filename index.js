@@ -19,22 +19,22 @@
 
 const fs = require('fs-extra');
 
-var path = require('path');
+const path = require('path');
 
-var Q = require('q');
-var tmp = require('tmp');
-var isUrl = require('is-url');
-var isObject = require('isobject');
-var pathIsInside = require('path-is-inside');
-var requireFresh = require('import-fresh');
-var validateIdentifier = require('valid-identifier');
+const Q = require('q');
+const tmp = require('tmp');
+const isUrl = require('is-url');
+const isObject = require('isobject');
+const pathIsInside = require('path-is-inside');
+const requireFresh = require('import-fresh');
+const validateIdentifier = require('valid-identifier');
 
-var fetch = require('cordova-fetch');
+const fetch = require('cordova-fetch');
 
 const events = require('cordova-common').events;
-var CordovaError = require('cordova-common').CordovaError;
-var ConfigParser = require('cordova-common').ConfigParser;
-var CordovaLogger = require('cordova-common').CordovaLogger.get();
+const CordovaError = require('cordova-common').CordovaError;
+const ConfigParser = require('cordova-common').ConfigParser;
+const CordovaLogger = require('cordova-common').CordovaLogger.get();
 
 const DEFAULT_VERSION = '1.0.0';
 
@@ -154,7 +154,7 @@ function createInAbsoluteDirectory (dir, opts) {
 
             // Use cordova-fetch to obtain npm or git templates
             if (opts.template && isRemoteUri(opts.url)) {
-                var target = opts.url;
+                const target = opts.url;
                 events.emit('verbose', 'Using cordova-fetch for ' + target);
                 return fetch(target, getSelfDestructingTempDir(), {});
             } else {
@@ -168,7 +168,7 @@ function createInAbsoluteDirectory (dir, opts) {
             // handle when input wants to specify sub-directory (specified in index.js as "dirname" export);
             var isSubDir = false;
             try {
-                var templatePkg = requireFresh(input_directory);
+                const templatePkg = requireFresh(input_directory);
                 if (templatePkg && templatePkg.dirname) {
                     import_from_path = templatePkg.dirname;
                     isSubDir = true;
@@ -183,7 +183,7 @@ function createInAbsoluteDirectory (dir, opts) {
                     import_from_path);
             }
 
-            var dirAlreadyExisted = fs.existsSync(dir);
+            const dirAlreadyExisted = fs.existsSync(dir);
             if (!dirAlreadyExisted) {
                 fs.mkdirSync(dir);
             }
@@ -205,7 +205,7 @@ function createInAbsoluteDirectory (dir, opts) {
                 // TODO: get stock package.json if template does not contain package.json;
                 copyIfNotExists(stockAssetPath('www'), path.join(dir, 'www'));
                 copyIfNotExists(stockAssetPath('hooks'), path.join(dir, 'hooks'));
-                var configXmlExists = projectConfig(dir); // moves config to root if in www
+                const configXmlExists = projectConfig(dir); // moves config to root if in www
                 if (!configXmlExists) {
                     fs.copySync(stockAssetPath('config.xml'), path.join(dir, 'config.xml'));
                 }
@@ -219,10 +219,10 @@ function createInAbsoluteDirectory (dir, opts) {
                 throw e;
             }
 
-            var pkgjsonPath = path.join(dir, 'package.json');
+            const pkgjsonPath = path.join(dir, 'package.json');
             // Update package.json name and version fields
             if (fs.existsSync(pkgjsonPath)) {
-                var pkgjson = requireFresh(pkgjsonPath);
+                const pkgjson = requireFresh(pkgjsonPath);
 
                 // Pkjson.displayName should equal config's name.
                 if (opts.name) {
@@ -244,11 +244,11 @@ function createInAbsoluteDirectory (dir, opts) {
             fs.ensureDirSync(path.join(dir, 'platforms'));
             fs.ensureDirSync(path.join(dir, 'plugins'));
 
-            var configPath = path.join(dir, 'config.xml');
+            const configPath = path.join(dir, 'config.xml');
             // only update config.xml if not a symlink
             if (!fs.lstatSync(configPath).isSymbolicLink()) {
                 // Write out id, name and default version to config.xml
-                var conf = new ConfigParser(configPath);
+                const conf = new ConfigParser(configPath);
                 if (opts.id) conf.setPackageName(opts.id);
                 if (opts.name) conf.setName(opts.name);
                 conf.setVersion(DEFAULT_VERSION);
@@ -280,23 +280,22 @@ function copyIfNotExists (src, dst) {
  * isSubDir - boolean is true if template has subdirectory structure (see code around line 229)
  */
 function copyTemplateFiles (templateDir, projectDir, isSubDir) {
-    var copyPath;
     // if template is a www dir
     if (path.basename(templateDir) === 'www') {
-        copyPath = path.resolve(templateDir);
+        const copyPath = path.resolve(templateDir);
         fs.copySync(copyPath, path.resolve(projectDir, 'www'));
     } else {
         var templateFiles = fs.readdirSync(templateDir);
         // Remove directories, and files that are unwanted
         if (!isSubDir) {
-            var excludes = ['package.json', 'RELEASENOTES.md', '.git', 'NOTICE', 'LICENSE', 'COPYRIGHT', '.npmignore'];
+            const excludes = ['package.json', 'RELEASENOTES.md', '.git', 'NOTICE', 'LICENSE', 'COPYRIGHT', '.npmignore'];
             templateFiles = templateFiles.filter(function (value) {
                 return excludes.indexOf(value) < 0;
             });
         }
         // Copy each template file after filter
         templateFiles.forEach(f => {
-            copyPath = path.resolve(templateDir, f);
+            const copyPath = path.resolve(templateDir, f);
             fs.copySync(copyPath, path.resolve(projectDir, f));
         });
     }
@@ -309,8 +308,8 @@ function copyTemplateFiles (templateDir, projectDir, isSubDir) {
  * @return {String or False} location of config file; if none exists, returns false
  */
 function projectConfig (projectDir) {
-    var rootPath = path.join(projectDir, 'config.xml');
-    var wwwPath = path.join(projectDir, 'www', 'config.xml');
+    const rootPath = path.join(projectDir, 'config.xml');
+    const wwwPath = path.join(projectDir, 'www', 'config.xml');
     if (fs.existsSync(rootPath)) {
         return rootPath;
     } else if (fs.existsSync(wwwPath)) {
